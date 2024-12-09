@@ -79,6 +79,10 @@ const App = () => {
 
     return (
         <div className="app">
+
+            {/* App Content */}
+            <h1 className="Heading">PrimeFlix</h1>
+
             {/* Top Navigation Bar */}
             <div className="navbar">
                 <div className="auth-buttons">
@@ -103,26 +107,28 @@ const App = () => {
                 )}
             </div>
 
-            {/* App Content */}
-            <h1>PrimeFlix</h1>
-
-            <div className="search">
-                <input
-                    placeholder="Search for movies"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            searchMovies(searchTerm);
-                        }
-                    }}
-                />
-            </div>
+            {!showWatchlist ? (
+                <div className="search">
+                    <input
+                        placeholder="Search for movies"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                searchMovies(searchTerm);
+                            }
+                        }}
+                    />
+                </div>
+            ) : (
+                <div>
+                </div>
+            )}
 
             {/* Conditional Rendering */}
             {showWatchlist ? (
-                <div>
-                    <h2>Your Watchlist</h2>
+                <div className={`watchlist-container ${showWatchlist ? "active" : ""}`}>
+                    <h1 className="WatchlistTitle">Your Watchlist</h1>
                     <div className="container">
                         {watchlist.length > 0 ? (
                             watchlist.map((movie, index) => (
