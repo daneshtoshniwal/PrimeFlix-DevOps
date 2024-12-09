@@ -1,15 +1,15 @@
 import React from 'react';
 
-const MovieCard = ({ movie }) => {
-    return(
+const MovieCard = ({ movie, addToWatchlist }) => {
+    return (
         <div className="movie">
             <div>
                 <p>{movie.Year}</p>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <img 
-                    src={movie.Poster !== 'N/A' ? movie.Poster : "https//via.placeholder.com/400"} 
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img
+                    src={movie.Poster !== 'N/A' ? movie.Poster : "https://via.placeholder.com/400"}
                     alt={movie.Title}
                     style={{ width: "100%", height: "auto" }}
                 />
@@ -18,9 +18,10 @@ const MovieCard = ({ movie }) => {
             <div>
                 <span>{movie.Type}</span>
                 <h3>{movie.Title}</h3>
+                <button onClick={() => addToWatchlist(movie.Title)}>Add to Watchlist</button>
             </div>
         </div>
     );
-}
+};
 
 export default MovieCard;
