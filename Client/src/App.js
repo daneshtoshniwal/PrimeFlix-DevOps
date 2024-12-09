@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Axios from "axios";
 import MovieCard from './MovieCard';
-import SearchIcon from './Search.svg';
 import './App.css';
 
 const API_URL = "https://www.omdbapi.com?apikey=75c49904";
@@ -13,6 +12,7 @@ const App = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [watchlist, setWatchlist] = useState([]);
+    const [showWatchlist, setShowWatchlist] = useState(false); // New state to toggle watchlist view
 
     const searchMovies = async (title) => {
         const response = await fetch(`${API_URL}&s=${title}`);
@@ -24,26 +24,33 @@ const App = () => {
         try {
             const response = await Axios.post("http://localhost:5000/login", { username, password });
             setToken(response.data.token);
+            alert("User logged in successfully");
         } catch (error) {
-            console.error("Login failed:", error.response.data.message);
+            alert(error.response?.data?.message || "Login failed");
         }
     };
 
     const register = async () => {
         try {
             await Axios.post("http://localhost:5000/register", { username, password });
-            alert("Registration successful. Please log in.");
+            alert("User registered successfully. Please log in.");
         } catch (error) {
-            console.error("Registration failed:", error.response.data.message);
+            alert(error.response?.data?.message || "Registration failed");
         }
     };
 
     const addToWatchlist = async (movie) => {
+        if (watchlist.some((m) => m.imdbID === movie.imdbID)) {
+            alert("Movie is already in the watchlist!");
+            return;
+        }
+
         try {
             const response = await Axios.post("http://localhost:5000/addToWatchlist", { token, movie });
             setWatchlist(response.data.watchlist);
+            alert("Movie added to the watchlist!");
         } catch (error) {
-            console.error("Failed to add to watchlist:", error.response.data.message);
+            alert(error.response?.data?.message || "Failed to add movie to watchlist");
         }
     };
 
@@ -54,7 +61,7 @@ const App = () => {
             });
             setWatchlist(response.data.watchlist);
         } catch (error) {
-            console.error("Failed to fetch watchlist:", error.response.data.message);
+            alert(error.response?.data?.message || "Failed to fetch watchlist");
         }
     };
 
@@ -66,59 +73,83 @@ const App = () => {
         searchMovies('superman');
     }, []);
 
+    const toggleWatchlist = () => {
+        setShowWatchlist(!showWatchlist);
+    };
+
     return (
-        <div className='app'>
-            <div>
-                <h2>User Login</h2>
-                <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <button onClick={login}>Login</button>
-                <button onClick={register}>Register</button>
+        <div className="app">
+            {/* Top Navigation Bar */}
+            <div className="navbar">
+                <div className="auth-buttons">
+                    <input
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        placeholder="Password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button onClick={login}>Login</button>
+                    <button onClick={register}>Register</button>
+                </div>
+                {token && (
+                    <button className="watchlist-button" onClick={toggleWatchlist}>
+                        {showWatchlist ? "Back to Movies" : "Watchlist"}
+                    </button>
+                )}
             </div>
+
+            {/* App Content */}
             <h1>PrimeFlix</h1>
 
-            <div className='search'>
+            <div className="search">
                 <input
-                    placeholder='Search for movies'
+                    placeholder="Search for movies"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
+                        if (e.key === "Enter") {
                             searchMovies(searchTerm);
                         }
                     }}
                 />
-                <img src={SearchIcon} alt="search" onClick={() => searchMovies(searchTerm)} />
             </div>
 
-            {movies?.length > 0 ? (
-                <div className='container'>
-                    {movies.map((movie) => (
-                        <MovieCard
-                            key={movie.imdbID}
-                            movie={movie}
-                            addToWatchlist={addToWatchlist}
-                        />
-                    ))}
+            {/* Conditional Rendering */}
+            {showWatchlist ? (
+                <div>
+                    <h2>Your Watchlist</h2>
+                    <div className="container">
+                        {watchlist.length > 0 ? (
+                            watchlist.map((movie, index) => (
+                                <MovieCard key={index} movie={movie} />
+                            ))
+                        ) : (
+                            <div className="empty">
+                                <h2>Your watchlist is empty!</h2>
+                            </div>
+                        )}
+                    </div>
                 </div>
             ) : (
-                <div className='empty'>
-                    <h2>No movies found!</h2>
-                </div>
-            )}
-
-            <h2>Your Watchlist</h2>
-            {watchlist.length > 0 ? (
-                <div className='container'>
-                    {watchlist.map((movie, index) => (
-                        <div key={index} className="movie">
-                            <h3>{movie}</h3>
+                <div className="container">
+                    {movies?.length > 0 ? (
+                        movies.map((movie) => (
+                            <MovieCard
+                                key={movie.imdbID}
+                                movie={movie}
+                                addToWatchlist={addToWatchlist}
+                            />
+                        ))
+                    ) : (
+                        <div className="empty">
+                            <h2>No movies found!</h2>
                         </div>
-                    ))}
-                </div>
-            ) : (
-                <div className='empty'>
-                    <h3>Your watchlist is empty!</h3>
+                    )}
                 </div>
             )}
         </div>

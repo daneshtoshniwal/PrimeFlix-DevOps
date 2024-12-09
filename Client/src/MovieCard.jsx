@@ -18,7 +18,9 @@ const MovieCard = ({ movie, addToWatchlist }) => {
             <div>
                 <span>{movie.Type}</span>
                 <h3>{movie.Title}</h3>
-                <button onClick={() => addToWatchlist(movie.Title)}>Add to Watchlist</button>
+                {addToWatchlist && (
+                    <button onClick={() => addToWatchlist(movie)}>Add to Watchlist</button>
+                )}
             </div>
         </div>
     );

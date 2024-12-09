@@ -40,6 +40,33 @@ body {
   width: fit-content;
 } */
 
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #282c34;
+    color: white;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.watchlist-button {
+    padding: 10px;
+    background-color: #61dafb;
+    color: #000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.watchlist-button:hover {
+    background-color: #21a1f1;
+}
+
 h1 {
   font-size: 3rem;
   letter-spacing: 1.5px;
